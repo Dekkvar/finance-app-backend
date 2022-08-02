@@ -5,7 +5,7 @@ import { AuthController } from '../controller/authController.js';
 import bcrypt from 'bcrypt';
 
 // JWT verifier MiddleWare
-// import { verifyToken } from '../middlewares/verifyToken.middleware';
+import { verifyToken } from '../middlewares/verifyToken.middleware.js';
 
 // Body Parser to read BODY from requests
 import bodyParser from 'body-parser';
@@ -15,6 +15,9 @@ const jsonParser = bodyParser.json();
 
 // Router from express
 const authRouter = express.Router();
+
+// Controller instance to execute methods
+const controller = new AuthController();
 
 authRouter.route('/register')
   .post(jsonParser, async (req, res) => {
@@ -28,11 +31,10 @@ authRouter.route('/register')
         name,
         lastname,
         email,
-        password,
+        password: hashedPassword,
+        categories: [],
         movements: []
       };
-
-      const controller = new AuthController;
 
       const response = await controller.registerUser(newUser);
 
@@ -45,6 +47,39 @@ authRouter.route('/register')
     }
   });
 
+authRouter.route('/login')
+  .post(jsonParser, async (req, res) => {
+    const { email, password } = req?.body;
+
+    if (email && password) {
+      const auth = {
+        email,
+        password
+      };
+
+      const response = await controller.loginUser(auth);
+
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send({
+        message: '[ERROR User Data Missing]: User cannot be logged'
+      });
+    }
+  });
+
+authRouter.route('/me')
+  .get(verifyToken, async (req, res) => {
+    const id = req?.query?.id;
+
+    if (id) {
+      const response = await controller.userData(id);
+
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send({
+        message: 'You are not authorised to perform this action'
+      });
+    }
+  });
+
 export default authRouter
-  // TODO: Ruta para el login
-  // TODO: Ruta protegida por el Token Middleware

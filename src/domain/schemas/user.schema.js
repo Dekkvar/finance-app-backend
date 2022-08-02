@@ -7,6 +7,7 @@ export const userSchemas = () => {
       lastname: { type: String, required: true },
       email: { type: String, required: true },
       password: { type: String, required: true },
+      categories: { type: [], required: true },
       movements: { type: [], required: true }
     }
   );

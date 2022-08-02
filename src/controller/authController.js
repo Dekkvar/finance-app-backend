@@ -1,11 +1,11 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - Auth Collection
-import { registerUser } from '../domain/orm/user.orm.js';
+import { registerUser, loginUser } from '../domain/orm/user.orm.js';
 
 export class AuthController {
   async registerUser(user) {
-    let response = '';
+    let response;
 
     if (user) {
       await registerUser(user).then((r) => {
@@ -25,6 +25,34 @@ export class AuthController {
         message: 'User not Registered: Please, provide a User to create one'
       }
     }
+    return response;
+  }
+
+  async loginUser(auth) {
+    let response;
+
+    if (auth) {
+      const data = await loginUser(auth);
+
+      if (!data) {
+        response = {
+          error: 'Invalid password'
+        }
+      } else {
+        LogSuccess(`[/api/auth/login] User Logged Successfully: ${data.user.email}`)
+        response = {
+          token: data.token,
+          message: `Welcome, ${data.user.name} ${data.user.lastname}`
+        }
+      }
+    } else {
+      LogWarning('[/api/auth/login] Login needs email && password')
+      response = {
+        error: '[AUTH ERROR]: Email & Password are needed',
+        message: 'Please, provide a email && password to login'
+      }
+    }
+
     return response;
   }
 }
