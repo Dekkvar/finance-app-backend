@@ -49,7 +49,6 @@ export const registerUser = async (user) => {
  */
 export const loginUser = async (auth) => {
   try {
-    let response;
     let userFound;
     let token;
 
@@ -80,6 +79,13 @@ export const loginUser = async (auth) => {
   }
 }
 
+export const getUserData = async (id) => {
+  try {
+    return await userModel.findById(id).select('-_id name lastname email categories movements')
+  } catch (error) {
+    LogError(`[ORM ERROR]: Getting User Data ${error}`);
+  }
+}
 
 /**
  * Method to obtain all Users from Collection 'users' in Mongo server.
