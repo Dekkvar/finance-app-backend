@@ -1,9 +1,15 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - Auth Collection
-import { registerUser, loginUser, getUserData } from '../domain/orm/user.orm.js';
+import { registerUser, loginUser } from '../domain/orm/user.orm.js';
+import { deleteUser, getUserData } from '../domain/orm/auth.orm.js';
 
 export class AuthController {
+  /**
+   * Controller for Register a new User
+   * @param {*} user Object with name, lastname, email, password, categories and movements.
+   * @returns error (because user already created), success (message of succesfully created user) or warning (if the user object don't have any property).
+   */
   async registerUser(user) {
     let response;
 
@@ -41,6 +47,7 @@ export class AuthController {
       } else {
         LogSuccess(`[/api/auth/login] User Logged Successfully: ${data.user.email}`)
         response = {
+          id: data.user._id,
           token: data.token,
           message: `Welcome, ${data.user.name} ${data.user.lastname}`
         }
@@ -67,6 +74,26 @@ export class AuthController {
       }
     } else {
       response = data;
+    }
+
+    return response;
+  }
+
+  async deleteUser(id) {
+    let response;
+
+    if (id) {
+      LogSuccess(`[/api/users] Delete User By ID: ${id}`)
+      await deleteUser(id).then((r) => {
+        response = {
+          message: `User with id ${id} deleted successfully`
+        }
+      })
+    } else {
+      LogWarning('[/api/users] Delete User Without ID')
+      response = {
+        message: 'Please, provide an ID to remove from database'
+      }
     }
 
     return response;

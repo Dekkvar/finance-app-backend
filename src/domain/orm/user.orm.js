@@ -1,5 +1,9 @@
 // ORM (Object-relational mapping)
 
+/**
+ * ORM to connect user methods without authoritation
+ */
+
 import { userSchemas } from '../../domain/schemas/user.schema.js';
 import { LogError } from '../../utils/logger.js';
 
@@ -20,7 +24,7 @@ const userModel = userSchemas()
 /**
  * Method to Register a new user in DB Collection
  * @param {*} user Object with name, lastname, email, password, categories and movements.
- * @returns error (if something wrong to create new user), message (if user alredy created) or promise from new user created.
+ * @returns error (if something wrong to create new user), message (if user already created) or promise from new user created.
  */
 export const registerUser = async (user) => {
   try {
@@ -76,39 +80,5 @@ export const loginUser = async (auth) => {
     }
   } catch (error) {
     LogError(`[ORM ERROR]: Login user ${error}`);
-  }
-}
-
-export const getUserData = async (id) => {
-  try {
-    return await userModel.findById(id).select('-_id name lastname email categories movements')
-  } catch (error) {
-    LogError(`[ORM ERROR]: Getting User Data ${error}`);
-  }
-}
-
-/**
- * Method to obtain all Users from Collection 'users' in Mongo server.
- */
-export const getAllUsers = async (page, limit) => {
-  try {
-    let response = {};
-
-    await userModel.find({ idDeleted: false })
-      .select('name lastname email')
-      .limit(limit)
-      .skip((page-1) * limit)
-      .exec().then((users) => {
-        response.users = users;
-      });
-
-    await userModel.countDocuments().then((total) => {
-      response.totalPages = Math.ceil(total / limit);
-      response.currentPage = page;
-    });
-
-    return response
-  } catch (error) {
-    LogError(`[ORM ERROR]: Getting All Users ${error}`);
   }
 }
