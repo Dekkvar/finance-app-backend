@@ -1,7 +1,6 @@
 import express from 'express';
 import { AuthController } from '../controller/authController.js';
-import session, { Store } from 'express-session';
-import cookieParser from 'cookie-parser';
+import { verifyUser } from '../middlewares/verifyUser.middleware.js';
 
 // BCRYPT for passwords
 import bcrypt from 'bcrypt';
@@ -17,32 +16,6 @@ const jsonParser = bodyParser.json();
 
 // Router from express
 const authRouter = express.Router();
-
-authRouter.use(cookieParser())
-
-// Session config from express-session
-authRouter.use(session({
-  secret: 'hello world',
-  resave: false,
-  saveUninitialized: true
-}));
-
-// Middleware for verify user
-const verifyUser = (req, res, next) => {
-  const user = req.session.user;
-  const cookies = req.cookies;
-  console.log(cookies)
-  console.log(user);
-
-  if (!user) {
-    return res.status(403).send({
-      authenticationError: 'No User Connected',
-      message: 'Not authorised perform this action'
-    });
-  }
-
-  next();
-}
 
 // Controller instance to execute methods
 const controller = new AuthController();
@@ -93,7 +66,15 @@ authRouter.route('/login')
 
       const response = await controller.loginUser(auth);
 
-      return res.status(200).send(response); // TODO: En el frontend tengo que almacenar el id en headers para poder acceder a la ruta /me
+      if(!response.error) {
+        let id = response.id.toString();
+
+        let hashId = bcrypt.hashSync(id, 3);
+
+        res.setHeader('sessionid', hashId);
+      };
+
+      return res.status(200).send(response);
     } else {
       return res.status(400).send({
         message: '[ERROR User Data Missing]: User cannot be logged'
@@ -137,18 +118,9 @@ authRouter.route('/me')
  * Logout route
  */
 authRouter.route('/logout')
-  .get(verifyToken, async (req, res, next) => {
-    let id = req.sessionID;
-    console.log(id);
-
-    req.session.user = null;
-    req.session.save((err) => {
-      if (err) console.error(err);
-
-      req.session.regenerate((err) => {
-        if (err) console.error(err);
-      })
-    });
+  .get(verifyToken, verifyUser, async (req, res, next) => {
+    
+    // TODO: Eliminate sessionid header.
 
     return res.status(200).send('User disconnected');
   })

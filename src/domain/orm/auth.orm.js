@@ -5,16 +5,6 @@
  import { userSchemas } from '../../domain/schemas/user.schema.js';
  import { LogError } from '../../utils/logger.js';
  
- import dotenv from 'dotenv';
- 
- import bcrypt from 'bcrypt';
- 
- import jwt from 'jsonwebtoken';
- 
- dotenv.config();
- 
- const secret = process.env.SECRET
- 
  const userModel = userSchemas()
 
 // CRUD

@@ -5,10 +5,17 @@ dotenv.config();
 
 const secret = process.env.SECRET;
 
+/**
+ * Middleware to Validate an User
+ * @param {*} req Original request previous middleware of validation User.
+ * @param {*} res Response to validation User.
+ * @param {*} next Next function to be executed.
+ * @returns Errors of validation in user authentication.
+ */
 export const verifyUser = (req, res, next) => {
-  const idToken = req.headers.idToken;
+  const idToken = req.headers.sessionid;
   const idQuery = req.query.id;
-
+  
   if (!idToken) {
     return res.status(403).send({
       authenticationError: 'No User Connected',
