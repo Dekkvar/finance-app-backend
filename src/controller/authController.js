@@ -2,7 +2,7 @@ import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - Auth Collection
 import { registerUser, loginUser } from '../domain/orm/user.orm.js';
-import { deleteUser, getUserData } from '../domain/orm/auth.orm.js';
+import { deleteUser, getUserData, updateUser } from '../domain/orm/auth.orm.js';
 
 export class AuthController {
   /**
@@ -63,7 +63,7 @@ export class AuthController {
     return response;
   }
 
-  async userData(id) {
+  async getUserData(id) {
     let response;
 
     const data = await getUserData(id);
@@ -74,6 +74,28 @@ export class AuthController {
       }
     } else {
       response = data;
+    }
+
+    return response;
+  }
+
+  async updateUser(id, data) {
+    let response;
+
+    const query = await updateUser(id, data);
+
+    if (!query) {
+      response = {
+        error: 'Invalid User'
+      }
+    }
+    
+    if (data.password) {
+      response = {
+        message: 'Password, successfully updated'
+      }
+    } else {
+      response = query;
     }
 
     return response;

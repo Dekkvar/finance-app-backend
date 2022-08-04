@@ -90,7 +90,7 @@ authRouter.route('/me')
     const id = req?.query?.id;
 
     if (id) {
-      const response = await controller.userData(id);
+      const response = await controller.getUserData(id);
 
       return res.status(200).send(response);
     } else {
@@ -98,6 +98,25 @@ authRouter.route('/me')
         message: 'You are not authorised to perform this action'
       });
     }
+  })
+
+  .put(verifyToken, verifyUser, jsonParser, async (req, res) => {
+    const id = req?.query?.id;
+    const data = req?.body;
+
+    if (!data) {
+      return res.status(400).send({
+        message: 'Please, provide any field to update'
+      });
+    } else if(data.password){ // TODO: Control from frontend new password has to be different that the old one.
+      let hashedPassword = bcrypt.hashSync(data.password, 9);
+
+      data.password = hashedPassword;
+    }
+    
+    const response = await controller.updateUser(id, data);
+
+    return res.status(200).send(response);
   })
 
   .delete(verifyToken, verifyUser, async (req, res) => {
