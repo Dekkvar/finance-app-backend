@@ -69,10 +69,12 @@ export class AuthController {
     const data = await getUserData(id);
 
     if (!data) {
+      LogWarning('[/api/auth/me] Need to provide valid user to get any data')
       response = {
         error: 'Invalid User'
       }
     } else {
+      LogSuccess('[/api/auth/me] Data get successfully')
       response = data;
     }
 
@@ -85,16 +87,17 @@ export class AuthController {
     const query = await updateUser(id, data);
 
     if (!query) {
+      LogWarning('[/api/auth/me] Need to provide valid user to update any data')
       response = {
         error: 'Invalid User'
       }
-    }
-    
-    if (data.password) {
+    } else if (data.password) {
+      LogSuccess('[/api/auth/me] Password successfully updated')
       response = {
         message: 'Password, successfully updated'
       }
     } else {
+      LogSuccess('[/api/auth/me] User data successfully updated')
       response = query;
     }
 
@@ -121,5 +124,3 @@ export class AuthController {
     return response;
   }
 }
-
-// TODO: Comprobar si este paso tiene alguna utilidad real.

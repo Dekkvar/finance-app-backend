@@ -16,7 +16,7 @@
  */
 export const getUserData = async (id) => {
   try {
-    return await userModel.findById(id).select('-_id name lastname email categories movements')
+    return await userModel.findById(id).select('-_id name lastname email accounts categories movements')
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }

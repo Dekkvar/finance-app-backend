@@ -36,6 +36,7 @@ authRouter.route('/register')
         lastname,
         email,
         password: hashedPassword,
+        accounts: [],
         categories: [],
         movements: []
       };
@@ -140,6 +141,7 @@ authRouter.route('/logout')
   .get(verifyToken, verifyUser, async (req, res, next) => {
     
     // TODO: Eliminate sessionid header.
+    // TODO: Implement Passport library?
 
     return res.status(200).send('User disconnected');
   })
