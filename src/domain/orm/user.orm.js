@@ -1,84 +1,78 @@
-// ORM (Object-relational mapping)
-
 /**
- * ORM to connect user methods without authoritation
+ * ORM to connect methods that needs authoritation
  */
 
-import { userSchemas } from '../../domain/schemas/user.schema.js';
-import { LogError } from '../../utils/logger.js';
+ import { userSchemas } from '../schemas/user.schema.js';
+ import { LogError } from '../../utils/logger.js';
+ 
+ const userModel = userSchemas()
 
-import dotenv from 'dotenv';
-
-import bcrypt from 'bcrypt';
-
-import jwt from 'jsonwebtoken';
-
-dotenv.config();
-
-const secret = process.env.SECRET
-
-const userModel = userSchemas()
-
-// CRUD (Create, Read, Update, Delete)
+// CRUD
 
 /**
- * Method to Register a new user in DB Collection
- * @param {*} user Object with name, lastname, email, password, categories and movements.
- * @returns error (if something wrong to create new user), message (if user already created) or promise from new user created.
+ * Method to Get Personal User Data
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or an Object with the user's data.
  */
-export const registerUser = async (user) => {
+export const getUserInfo = async (id) => {
   try {
-    let result;
-
-    await userModel.findOne({email: user.email}).then((userFound) => {
-      result = userFound;
-    });
-    
-    if (result == null) {
-      return await userModel.create(user);
-    } else {
-      return {
-        message: 'The email already exists'
-      }
-    }
+    return await userModel.findById(id).select('-_id -password -accounts -categories -movements -__v')
   } catch (error) {
-    LogError(`[ORM ERROR]: Creating a new user ${error}`);
+    LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
 }
 
 /**
- * Method to User Login 
- * @param {*} auth Object with name && password.
- * @returns Error (if user not found in DB or password is wrong) or an Object with user's data and a JWT token.
+ * Method to Get Dashboard User Data
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or an Object with the user's data.
  */
-export const loginUser = async (auth) => {
+export const getUserData = async (id) => {
   try {
-    let userFound;
-    let token;
-
-    await userModel.findOne({email: auth.email}).then((user) => {
-      userFound = user;
-    }).catch((error) => {
-      console.error('[ERROR Authentication in ORM]: User Not Found')
-      throw new Error(`[ERROR Authentication in ORM]: User Not Found: ${error}`)
-    });
-
-    const validPassword = bcrypt.compareSync(auth.password, userFound.password);
-
-    if (!validPassword) {
-      console.error('[ERROR Authentication in ORM]: Password Not Valid')
-      throw new Error('[ERROR Authentication in ORM]: Password Not Valid')
-    };
-
-    token = jwt.sign({ email: userFound.email }, secret, {
-      expiresIn: '1d'
-    });
-
-    return {
-      user: userFound,
-      token
-    }
+    return await userModel.findById(id).select('accounts categories movements -_id') // TODO: Only get last 12 months movements.
   } catch (error) {
-    LogError(`[ORM ERROR]: Login user ${error}`);
+    LogError(`[ORM ERROR] Getting User Data: ${error}`);
+  }
+}
+
+/**
+ * Method to Update User Info
+ * @param {*} id of the user.
+ * @param {*} data to update.
+ * @returns Error (if user not found in DB) or an Object with the user's data.
+ */
+export const updateUser = async (id, data) => {
+  try {
+    return await userModel.findByIdAndUpdate(id, data, {new: true, select: '-_id -password -accounts -categories -movements -__v'});
+  } catch (error) {
+    LogError(`[ORM ERROR] Updating User ${id}: ${error}`);
+  }
+}
+
+/**
+ * Method to Update User Data
+ * @param {*} id of the user.
+ * @param {*} data to update.
+ * @returns Error (if user not found in DB) or an Object with the user's data.
+ */
+ export const updateUserData = async (id, data) => {
+  try {
+    return await userModel.findByIdAndUpdate(id, data, {new: true, select: 'accounts categories -_id'});
+  } catch (error) {
+    LogError(`[ORM ERROR] Updating User ${id}: ${error}`);
+  }
+}
+
+
+/**
+ * Method to Delete User
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or number of deleted users.
+ */
+export const deleteUser = async (id) => {
+  try {
+    return await userModel.deleteOne({ _id: id })
+  } catch (error) {
+    LogError(`[ORM ERROR] Deleting User by ID: ${error}`)
   }
 }

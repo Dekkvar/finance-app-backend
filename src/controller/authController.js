@@ -1,13 +1,12 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - Auth Collection
-import { registerUser, loginUser } from '../domain/orm/user.orm.js';
-import { deleteUser, getUserData, updateUser } from '../domain/orm/auth.orm.js';
+import { registerUser, loginUser } from '../domain/orm/auth.orm.js';
 
 export class AuthController {
   /**
    * Controller for Register a new User
-   * @param {*} user Object with name, lastname, email, password, categories and movements.
+   * @param {*} user Object with name, lastname, email, password, accounts, categories and movements.
    * @returns error (because user already created), success (message of succesfully created user) or warning (if the user object don't have any property).
    */
   async registerUser(user) {
@@ -34,6 +33,11 @@ export class AuthController {
     return response;
   }
 
+  /**
+   * Controller for Login a User.
+   * @param {*} auth Object with email and password.
+   * @returns Error (if error in comparison with DB password or if any field is not provided) or object with user id, new token and welcome message (if successfully login)
+   */
   async loginUser(auth) {
     let response;
 
@@ -41,11 +45,12 @@ export class AuthController {
       const data = await loginUser(auth);
 
       if (!data) {
+        LogError('[/api/auth/login] Invalid password');
         response = {
           error: 'Invalid password'
         }
       } else {
-        LogSuccess(`[/api/auth/login] User Logged Successfully: ${data.user.email}`)
+        LogSuccess(`[/api/auth/login] User Logged Successfully: ${data.user.email}`);
         response = {
           id: data.user._id,
           token: data.token,
@@ -53,71 +58,10 @@ export class AuthController {
         }
       }
     } else {
-      LogWarning('[/api/auth/login] Login needs email && password')
+      LogWarning('[/api/auth/login] Login needs email && password');
       response = {
         error: '[AUTH ERROR]: Email & Password are needed',
         message: 'Please, provide a email && password to login'
-      }
-    }
-
-    return response;
-  }
-
-  async getUserData(id) {
-    let response;
-
-    const data = await getUserData(id);
-
-    if (!data) {
-      LogWarning('[/api/auth/me] Need to provide valid user to get any data')
-      response = {
-        error: 'Invalid User'
-      }
-    } else {
-      LogSuccess('[/api/auth/me] Data get successfully')
-      response = data;
-    }
-
-    return response;
-  }
-
-  async updateUser(id, data) {
-    let response;
-
-    const query = await updateUser(id, data);
-
-    if (!query) {
-      LogWarning('[/api/auth/me] Need to provide valid user to update any data')
-      response = {
-        error: 'Invalid User'
-      }
-    } else if (data.password) {
-      LogSuccess('[/api/auth/me] Password successfully updated')
-      response = {
-        message: 'Password, successfully updated'
-      }
-    } else {
-      LogSuccess('[/api/auth/me] User data successfully updated')
-      response = query;
-    }
-
-    return response;
-  }
-
-  async deleteUser(id) {
-    let response;
-
-    if (id) {
-      LogSuccess(`[/api/users] Delete User By ID: ${id}`)
-      await deleteUser(id).then((r) => {
-        response = {
-          message: `User with id ${id} deleted successfully`
-        }
-      })
-    } else {
-      LogWarning('[/api/users] Delete User Without ID')
-      response = {
-        message: 'Please, provide an ID to remove from database'
       }
     }
 
