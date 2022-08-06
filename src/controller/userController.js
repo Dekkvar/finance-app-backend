@@ -82,28 +82,26 @@ export class UserController {
   /**
    * Controller to update personal User data.
    * @param {*} id 
-   * @param {*} data 
+   * @param {*} data object for update accounts, categories or movements.
    * @returns 
    */
   async updateUserData(id, data) {
     let response;
 
     const query = await updateUserData(id, data);
+    console.log(data);
 
     if (!query) {
-      LogWarning('[/api/user/data] Need to provide valid user to update any data')
+      LogWarning('[/api/user/data] Need to provide valid user to update any data');
       response = {
-        error: 'Invalid User'
-      }
-    } else if (data.password) {
-      LogSuccess('[/api/user/data] Password successfully updated')
-      response = {
-        message: 'Password, successfully updated'
+        error: 'Error to update user data'
       }
     } else {
-      LogSuccess('[/api/user/data] User data successfully updated')
-      response = query;
-    }
+      LogSuccess(`[/api/user/data] Data ${Object.keys(data)[0]} successfully updated`);
+      response = {
+        message: `Data ${Object.keys(data)[0]} successfully updated`
+      }
+    } 
 
     return response;
   }

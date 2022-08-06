@@ -88,15 +88,20 @@ userRouter.route('/data')
   .put(verifyToken, verifyUser, jsonParser, async (req, res) => {
     const id = req?.query?.id;
     const data = req?.body; // Object with all accounts || all categories || new or modify+old movement
+    let response;
 
     if (data.accounts || data.categories) {
-      const response = await controller.updateUserData(id, data);
+      response = await controller.updateUserData(id, data);
 
       return res.status(200).send(response);
     } else if (data.movements) {
-      
-    } else {
+      response = await controller.updateUserData(id, data); // TODO: Create another controller and function that update only the month movements.
 
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send({
+        message: 'You are not authorised to perform this action'
+      });
     }
 
   })

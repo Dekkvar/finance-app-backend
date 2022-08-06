@@ -57,9 +57,9 @@ export const updateUser = async (id, data) => {
  */
  export const updateUserData = async (id, data) => {
   try {
-    return await userModel.findByIdAndUpdate(id, data, {new: true, select: 'accounts categories -_id'});
+    return await userModel.findByIdAndUpdate(id, data);
   } catch (error) {
-    LogError(`[ORM ERROR] Updating User ${id}: ${error}`);
+    LogError(`[ORM ERROR] Updating User Data ${data[0]} ${id}: ${error}`);
   }
 }
 
