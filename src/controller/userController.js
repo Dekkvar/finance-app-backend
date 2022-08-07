@@ -1,7 +1,7 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - User Collection
-import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData } from '../domain/orm/user.orm.js';
+import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData, updateUserMovements } from '../domain/orm/user.orm.js';
 
 export class UserController {
   /**
@@ -89,7 +89,6 @@ export class UserController {
     let response;
 
     const query = await updateUserData(id, data);
-    console.log(data);
 
     if (!query) {
       LogWarning('[/api/user/data] Need to provide valid user to update any data');
@@ -100,6 +99,41 @@ export class UserController {
       LogSuccess(`[/api/user/data] Data ${Object.keys(data)[0]} successfully updated`);
       response = {
         message: `Data ${Object.keys(data)[0]} successfully updated`
+      }
+    } 
+
+    return response;
+  }
+
+  /**
+   * Controller to update User movements.
+   * @param {*} id of the user.
+   * @param {*} data object for update movements.
+   * @returns 
+   */
+   async updateUserMovements(id, data) {
+    let response;
+
+    // Data for search
+    const year = data.year;
+    const month = data.month;
+
+    // Data to update
+    const income = data.income;
+    const outcome = data.outcome;
+    const movements = data.movements;
+
+    const query = await updateUserMovements(id, year, month, income, outcome, movements);
+
+    if (!query) {
+      LogWarning('[/api/user/data] Need to provide valid user to update any movements');
+      response = {
+        error: 'Error to update user movements'
+      }
+    } else {
+      LogSuccess(`[/api/user/data] Data movements from ${month} ${year} successfully updated`);
+      response = {
+        message: `Data movements from ${month} ${year} successfully updated`
       }
     } 
 

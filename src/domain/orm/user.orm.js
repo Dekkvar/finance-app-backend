@@ -63,6 +63,42 @@ export const updateUser = async (id, data) => {
   }
 }
 
+export const updateUserMovements = async (id, year, mon, inc, out, mov) => {
+  try {
+    let oldMovements = await userModel.findById(id, '-_id movements');
+
+    if (!oldMovements.movements.has(year.toString())) {
+      let movementsToUpdate = oldMovements;
+      let addNewYearMovements = {
+        [mon]: {
+          income: inc,
+          outcome: out,
+          movements: mov
+        }
+      }
+      
+      movementsToUpdate.movements.set(year.toString(), addNewYearMovements)
+
+      return await userModel.findByIdAndUpdate(id, {$set: {movements: movementsToUpdate.movements}})
+    } else {
+      let yearToUpdate = oldMovements.movements.get(year.toString());
+      let updatedMovements = oldMovements;
+      let newMonth = {
+        income: inc,
+        outcome: out,
+        movements: mov
+      };
+
+      yearToUpdate[mon] = newMonth;
+        
+      updatedMovements.movements.set(year.toString(), yearToUpdate)
+
+      return await userModel.findByIdAndUpdate(id, {$set: {movements: updatedMovements.movements}})
+    }
+  } catch (error) {
+    LogError(`[ORM ERROR] Updating User ${id} movements for ${mon} ${year}: ${error}`);
+  }
+}
 
 /**
  * Method to Delete User

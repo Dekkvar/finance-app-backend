@@ -95,7 +95,7 @@ userRouter.route('/data')
 
       return res.status(200).send(response);
     } else if (data.movements) {
-      response = await controller.updateUserData(id, data); // TODO: Create another controller and function that update only the month movements.
+      response = await controller.updateUserMovements(id, data);
 
       return res.status(200).send(response);
     } else {

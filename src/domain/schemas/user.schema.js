@@ -8,9 +8,9 @@ export const userSchemas = () => {
       email: { type: String, required: true },
       password: { type: String, required: true },
       dob: { type: Date },
-      accounts: { type: [], required: true },
-      categories: { type: [], required: true },
-      movements: { type: [], required: true }
+      accounts: { type: [], required: true, default: ["cash"] },
+      categories: { type: Map, of: Array, required: true },
+      movements: { type: Map, required: true }
     }
   );
 
