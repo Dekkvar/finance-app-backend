@@ -1,5 +1,32 @@
 import mongoose from "mongoose";
 
+// TODO: Definir el esquema de la DB
+// const movementSchema = new mongoose.Schema(
+//   {
+//     day: { type: Number, min: 1, max: 31, required: true},
+//     description: { type: String, required: true },
+//     category: { type: String, required: true },
+//     subcategory: { type: String, required: true },
+//     account: { type: String, required: true },
+//     amount: { type: Number, required: true },
+//     transfer: { type: Boolean, required: true }
+//   }
+// )
+
+// const monthSchema = new mongoose.Schema(
+//   {
+//     month: { type: String, required: true },
+//     movement: [ movementSchema ]
+//   }
+// )
+
+// const yearSchema = new mongoose.Schema(
+//   {
+//     year: { type: String, required: true },
+//     months: [ monthSchema ]
+//   }
+// )
+
 export const userSchemas = () => {
   const userSchema = new mongoose.Schema(
     {

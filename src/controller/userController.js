@@ -29,8 +29,8 @@ export class UserController {
 
   /**
    * Controller to Get Dashboard User Data.
-   * @param {*} id 
-   * @returns 
+   * @param {*} id of the user
+   * @returns information for the dashboard (accounts, categories and movements)
    */
   async getUserData(id) {
     let response;
@@ -52,9 +52,9 @@ export class UserController {
   
   /**
    * Controller to update personal User data.
-   * @param {*} id 
-   * @param {*} data 
-   * @returns 
+   * @param {*} id of the user.
+   * @param {*} data iformation to update.
+   * @returns message with error or successfull
    */
   async updateUser(id, data) {
     let response;
@@ -80,10 +80,10 @@ export class UserController {
   }
 
   /**
-   * Controller to update personal User data.
-   * @param {*} id 
-   * @param {*} data object for update accounts, categories or movements.
-   * @returns 
+   * Controller to update accounts or categories data.
+   * @param {*} id of the user.
+   * @param {*} data object for update accounts or categories.
+   * @returns message with error or succesfull
    */
   async updateUserData(id, data) {
     let response;
@@ -109,7 +109,7 @@ export class UserController {
    * Controller to update User movements.
    * @param {*} id of the user.
    * @param {*} data object for update movements.
-   * @returns 
+   * @returns message with error or successfull
    */
    async updateUserMovements(id, data) {
     let response;

@@ -36,6 +36,75 @@ export const getUserData = async (id) => {
 }
 
 /**
+ * Method to Get Dashboard User Data Accounts
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or an Object with the user's data.
+ */
+export const getUserDataAccounts = async (id) => {
+  try {
+    return await userModel.findById(id).select('accounts -_id')
+  } catch (error) {
+    LogError(`[ORM ERROR] Getting User Data: ${error}`);
+  }
+}
+
+/**
+ * Method to Get Dashboard User Data Accounts
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or an Object with the user's data.
+ */
+ export const getUserDataCategories = async (id) => {
+  try {
+    return await userModel.findById(id).select('categories -_id')
+  } catch (error) {
+    LogError(`[ORM ERROR] Getting User Data: ${error}`);
+  }
+}
+
+/**
+ * Method to Get Dashboard User Data Accounts
+ * @param {*} id of user
+ * @returns Error (if user not found in DB) or an Object with the user's data.
+ */
+ export const getUserDataMovements = async (id, year) => {
+  try {
+    return await userModel.findById(id, 'movements -_id', (err, dataFound) => {
+      let newDocument = {};
+      let monthsInDocument = 0;
+
+      // Take all years available in the data found and sort reverse.
+      let yearArr = [];
+
+      for (const keys of dataFound.keys()) {
+        yearArr.push(keys);
+      };
+
+      yearArr.sort(-1);
+
+      // 
+      let months = ['December', 'November', 'October', 'September', 'August', 'July', 'June', 'May', 'April', 'March', 'Febrary', 'January']
+
+      for (let y of yearArr) {
+        for (let m of months) {
+          for (let d in dataFound[y][m]) {
+            if (monthsInDocument = 12) {
+              break;
+            } else if (d) {
+              monthsInDocument++;
+              newDocument[y][m] = dataFound[y][m];
+            }
+          }
+        }
+      }
+
+      return newDocument;
+    })
+  } catch (error) {
+    LogError(`[ORM ERROR] Getting User Data: ${error}`);
+  }
+}
+
+/**
  * Method to Update User Info
  * @param {*} id of the user.
  * @param {*} data to update.
