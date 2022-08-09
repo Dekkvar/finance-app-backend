@@ -1,7 +1,7 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - User Collection
-import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData, updateUserMovements } from '../domain/orm/user.orm.js';
+import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData, updateUserMovements, getUserLast12MonthsMovements } from '../domain/orm/user.orm.js';
 
 export class UserController {
   /**
@@ -35,7 +35,8 @@ export class UserController {
   async getUserData(id) {
     let response;
 
-    const data = await getUserData(id);
+    const data = await getUserLast12MonthsMovements(id);
+    console.log(data)
 
     if (!data) {
       LogWarning('[/api/user/me] Need to provide valid user to get any data')

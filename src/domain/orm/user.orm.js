@@ -66,39 +66,42 @@ export const getUserDataAccounts = async (id) => {
  * @param {*} id of user
  * @returns Error (if user not found in DB) or an Object with the user's data.
  */
- export const getUserDataMovements = async (id, year) => {
+ export const getUserLast12MonthsMovements = async (id) => {
   try {
-    return await userModel.findById(id, 'movements -_id', (err, dataFound) => {
-      let newDocument = {};
+    let newDocument = {};
+
+    await userModel.findById(id, 'movements -_id').then((dataFound) => {
+      let months = ['December', 'November', 'October', 'September', 'August', 'July', 'June', 'May', 'April', 'March', 'Febrary', 'January']
       let monthsInDocument = 0;
 
       // Take all years available in the data found and sort reverse.
-      let yearArr = [];
+      let yearArr = Array.from(dataFound.movements.keys());
 
-      for (const keys of dataFound.keys()) {
-        yearArr.push(keys);
-      };
+      yearArr.sort((a, b) => {return b - a});
 
-      yearArr.sort(-1);
-
-      // 
-      let months = ['December', 'November', 'October', 'September', 'August', 'July', 'June', 'May', 'April', 'March', 'Febrary', 'January']
-
-      for (let y of yearArr) {
-        for (let m of months) {
-          for (let d in dataFound[y][m]) {
-            if (monthsInDocument = 12) {
+      // Add last 12 months to the document
+      for (let y in yearArr) {
+        for (let m in months) {
+          if (dataFound.movements.get(yearArr[y])[months[m]] !== undefined) {
+            if (monthsInDocument === 12) {
               break;
-            } else if (d) {
+            } else {
               monthsInDocument++;
-              newDocument[y][m] = dataFound[y][m];
+
+              if (!newDocument[yearArr[y]]) {
+                newDocument[yearArr[y]] = {};
+              }
+
+              newDocument[yearArr[y]][months[m]] = dataFound.movements.get(yearArr[y])[months[m]];
+              delete newDocument[yearArr[y]][months[m]].movements
             }
           }
         }
       }
-
-      return newDocument;
     })
+    console.log(newDocument)
+
+    return newDocument
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
