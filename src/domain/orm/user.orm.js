@@ -29,7 +29,7 @@ export const getUserInfo = async (id) => {
  */
 export const getUserData = async (id) => {
   try {
-    return await userModel.findById(id).select('accounts categories movements -_id') // TODO: Only get last 12 months movements.
+    return await userModel.findById(id).select('accounts categories movements -_id')
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
@@ -62,42 +62,61 @@ export const getUserDataAccounts = async (id) => {
 }
 
 /**
- * Method to Get Dashboard User Data Accounts
+ * Method to Get Dashboard User Last 12 Months Movements
  * @param {*} id of user
  * @returns Error (if user not found in DB) or an Object with the user's data.
  */
  export const getUserLast12MonthsMovements = async (id) => {
   try {
     let newDocument = {};
+    let date = new Date();
+    let year = date.getFullYear().toString();
+    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let month = months[date.getMonth()];
+    let newMonths;
+
+    if(month !== 'Dec') {
+      let pos = months.indexOf(month);
+      let splitedMonths = months.splice(pos + 1);
+
+      newMonths = splitedMonths.concat(months);  
+    } else {
+      newMonths = months;
+    }
+    
+    newMonths.reverse();
 
     await userModel.findById(id, 'movements -_id').then((dataFound) => {
-      let months = ['December', 'November', 'October', 'September', 'August', 'July', 'June', 'May', 'April', 'March', 'Febrary', 'January']
       let monthsInDocument = 0;
 
-      // Take all years available in the data found and sort reverse.
-      let yearArr = Array.from(dataFound.movements.keys());
-
-      yearArr.sort((a, b) => {return b - a});
-
       // Add last 12 months to the document
-      for (let y in yearArr) {
-        for (let m in months) {
-          if (dataFound.movements.get(yearArr[y])[months[m]] !== undefined) {
-            if (monthsInDocument === 12) {
-              break;
-            } else {
-              monthsInDocument++;
+      for (let m in newMonths) {
+        if (monthsInDocument === 12) {
+          break;
+        } else {
+          monthsInDocument++
 
-              if (!newDocument[yearArr[y]]) {
-                newDocument[yearArr[y]] = {};
-              }
+          if (!newDocument[year]) {
+            newDocument[year] = {};
+          }
 
-              newDocument[yearArr[y]][months[m]] = dataFound.movements.get(yearArr[y])[months[m]];
-              delete newDocument[yearArr[y]][months[m]].movements
+          if (dataFound.movements.get(year)[newMonths[m]]) {
+            newDocument[year][newMonths[m]] = dataFound.movements.get(year)[newMonths[m]];
+            delete newDocument[year][newMonths[m]].movements
+          } else {
+            newDocument[year][newMonths[m]] = {
+              income: 0,
+              outcome: 0
             }
+          }
+
+          if (newMonths[m] === 'Jan') {
+            let oldYear = Number(year) - 1;
+            year = oldYear.toString();
           }
         }
       }
+      
     })
     console.log(newDocument)
 
