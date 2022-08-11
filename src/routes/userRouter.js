@@ -70,6 +70,9 @@ userRouter.route('/me')
     }
   })
 
+/**
+ * 
+ */
 userRouter.route('/data')
   .get(verifyToken, verifyUser, async (req, res) => {
     const id = req?.query?.id;
@@ -104,6 +107,30 @@ userRouter.route('/data')
       });
     }
 
+  })
+
+/**
+ * Global data route
+ */
+userRouter.route('/global')
+  .get(verifyToken, verifyUser, async (req, res) => {
+    const id = req?.query?.id;
+
+    if (id) {
+      const accounts = await controller.getUserAccounts(id);
+      const movements = await controller.getUserLastMonthsMovements(id);
+
+      let response = {
+        accounts,
+        movements
+      }
+
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send({
+        message: 'You are not authorised to perform this action'
+      });
+    }
   })
 
 export default userRouter

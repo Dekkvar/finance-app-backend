@@ -16,7 +16,7 @@
  */
 export const getUserInfo = async (id) => {
   try {
-    return await userModel.findById(id).select('-_id -password -accounts -categories -movements -__v')
+    return await userModel.findById(id).select('-_id -password -accounts -categories -movements -__v') // TODO: Edit to send name, lastname, dob and id
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
@@ -49,7 +49,7 @@ export const getUserDataAccounts = async (id) => {
 }
 
 /**
- * Method to Get Dashboard User Data Accounts
+ * Method to Get Dashboard User Data Categories
  * @param {*} id of user
  * @returns Error (if user not found in DB) or an Object with the user's data.
  */
@@ -68,8 +68,9 @@ export const getUserDataAccounts = async (id) => {
  */
  export const getUserLast12MonthsMovements = async (id) => {
   try {
+    const date = new Date();
+    const numberOfMonths = 12;
     let newDocument = {};
-    let date = new Date();
     let year = date.getFullYear().toString();
     let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     let month = months[date.getMonth()];
@@ -91,18 +92,18 @@ export const getUserDataAccounts = async (id) => {
 
       // Add last 12 months to the document
       for (let m in newMonths) {
-        if (monthsInDocument === 12) {
+        if (monthsInDocument === numberOfMonths) {
           break;
         } else {
-          monthsInDocument++
+          monthsInDocument++;
 
           if (!newDocument[year]) {
             newDocument[year] = {};
           }
 
-          if (dataFound.movements.get(year)[newMonths[m]]) {
+          if (dataFound.movements.has(year) && dataFound.movements.get(year)[newMonths[m]]) {
             newDocument[year][newMonths[m]] = dataFound.movements.get(year)[newMonths[m]];
-            delete newDocument[year][newMonths[m]].movements
+            delete newDocument[year][newMonths[m]].movements;
           } else {
             newDocument[year][newMonths[m]] = {
               income: 0,
@@ -118,9 +119,8 @@ export const getUserDataAccounts = async (id) => {
       }
       
     })
-    console.log(newDocument)
 
-    return newDocument
+    return newDocument;
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }

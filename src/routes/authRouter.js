@@ -38,9 +38,9 @@ authRouter.route('/register')
         lastname,
         email,
         password: hashedPassword,
-        accounts: [],
-        categories: [],
-        movements: []
+        accounts: new Map().set('cash', 0),
+        categories: {},
+        movements: {}
       };
 
       const response = await controller.registerUser(newUser);

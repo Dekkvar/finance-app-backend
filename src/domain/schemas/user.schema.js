@@ -15,14 +15,12 @@ import mongoose from "mongoose";
 
 // const monthSchema = new mongoose.Schema(
 //   {
-//     month: { type: String, required: true },
 //     movement: [ movementSchema ]
 //   }
 // )
 
 // const yearSchema = new mongoose.Schema(
 //   {
-//     year: { type: String, required: true },
 //     months: [ monthSchema ]
 //   }
 // )
@@ -34,8 +32,8 @@ export const userSchemas = () => {
       lastname: { type: String, required: true },
       email: { type: String, required: true },
       password: { type: String, required: true },
-      dob: { type: Date },
-      accounts: { type: [], required: true, default: ["cash"] },
+      dob: { type: Date, default: new Date() },
+      accounts: { type: Map, of: Number, required: true },
       categories: { type: Map, of: Array, required: true },
       movements: { type: Map, required: true }
     }
