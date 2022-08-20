@@ -38,7 +38,7 @@ export const registerUser = async (user) => {
       return await userModel.create(user);
     } else {
       return {
-        message: 'The email already exists'
+        error: 'The email already exists'
       }
     }
   } catch (error) {

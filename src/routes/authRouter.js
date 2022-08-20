@@ -45,6 +45,10 @@ authRouter.route('/register')
 
       const response = await controller.registerUser(newUser);
 
+      if (response.error) {
+        return res.status(400).send(response)
+      }
+
       return res.status(200).send(response);
 
     } else {

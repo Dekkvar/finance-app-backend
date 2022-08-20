@@ -14,8 +14,8 @@ export class AuthController {
 
     if (user) {
       await registerUser(user).then((r) => {
-        if (r.message) {
-          LogError(`[/api/auth/register] Error Creating User: ${r.message}`)
+        if (r.error) {
+          LogError(`[/api/auth/register] Error Creating User: ${r.error}`)
           response = r;
         } else {
           LogSuccess(`[/api/auth/register] Created User Successfully: ${user.email}`)
