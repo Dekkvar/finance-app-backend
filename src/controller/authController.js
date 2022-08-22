@@ -54,6 +54,7 @@ export class AuthController {
         response = {
           id: data.user._id,
           token: data.token,
+          hashedId: data.hashedId,
           message: `Welcome, ${data.user.name} ${data.user.lastname}`
         }
       }

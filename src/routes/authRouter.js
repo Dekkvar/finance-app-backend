@@ -73,14 +73,6 @@ authRouter.route('/login')
 
       const response = await controller.loginUser(auth);
 
-      if(!response.error) {
-        let id = response.id.toString();
-
-        let hashId = bcrypt.hashSync(id, 3);
-
-        res.setHeader('sessionid', hashId);
-      };
-
       return res.status(200).send(response);
     } else {
       return res.status(400).send({

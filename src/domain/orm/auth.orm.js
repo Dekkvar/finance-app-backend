@@ -55,6 +55,7 @@ export const loginUser = async (auth) => {
   try {
     let userFound;
     let token;
+    let hashedId;
 
     await userModel.findOne({email: auth.email}).then((user) => {
       userFound = user;
@@ -74,9 +75,14 @@ export const loginUser = async (auth) => {
       expiresIn: '1d'
     });
 
+    let id = userFound._id.toString();
+
+    hashedId = bcrypt.hashSync(id, 3);
+
     return {
       user: userFound,
-      token
+      token,
+      hashedId
     }
   } catch (error) {
     LogError(`[ORM ERROR]: Login user ${error}`);
