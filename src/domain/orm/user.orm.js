@@ -97,15 +97,21 @@ export const getUserDataAccounts = async (id) => {
         } else {
           monthsInDocument++;
 
-          if (!newDocument[year]) {
-            newDocument[year] = {};
-          }
+          let monthYear = newMonths[m] + "'" + year.slice(2);
+
+
+          // if (!newDocument[year]) {
+          //   newDocument[year] = {};
+          // }
 
           if (dataFound.movements.has(year) && dataFound.movements.get(year)[newMonths[m]]) {
-            newDocument[year][newMonths[m]] = dataFound.movements.get(year)[newMonths[m]];
-            delete newDocument[year][newMonths[m]].movements;
+            newDocument[monthYear] = {};
+            newDocument[monthYear] = dataFound.movements.get(year)[newMonths[m]];
+            delete newDocument[monthYear].movements;
+            // newDocument[year][newMonths[m]] = dataFound.movements.get(year)[newMonths[m]];
+            // delete newDocument[year][newMonths[m]].movements;
           } else {
-            newDocument[year][newMonths[m]] = {
+            newDocument[monthYear] = {
               income: 0,
               outcome: 0
             }
