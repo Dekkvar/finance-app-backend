@@ -42,7 +42,9 @@ export const getUserData = async (id) => {
  */
 export const getUserDataAccounts = async (id) => {
   try {
-    return await userModel.findById(id).select('accounts -_id')
+    const accounts = await userModel.findById(id).select('accounts -_id')
+    
+    return accounts.accounts
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
@@ -99,17 +101,10 @@ export const getUserDataAccounts = async (id) => {
 
           let monthYear = newMonths[m] + "'" + year.slice(2);
 
-
-          // if (!newDocument[year]) {
-          //   newDocument[year] = {};
-          // }
-
           if (dataFound.movements.has(year) && dataFound.movements.get(year)[newMonths[m]]) {
             newDocument[monthYear] = {};
             newDocument[monthYear] = dataFound.movements.get(year)[newMonths[m]];
             delete newDocument[monthYear].movements;
-            // newDocument[year][newMonths[m]] = dataFound.movements.get(year)[newMonths[m]];
-            // delete newDocument[year][newMonths[m]].movements;
           } else {
             newDocument[monthYear] = {
               income: 0,
