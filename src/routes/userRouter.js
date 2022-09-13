@@ -133,4 +133,25 @@ userRouter.route('/global')
     }
   })
 
+userRouter.route('/settings')
+  .get(async(req, res) => {
+    const id = req?.query?.id;
+
+    if (id) {
+      const accounts = await controller.getUserAccounts(id);
+      const categories = await controller.getUserCategories(id);
+
+      let response = {
+        accounts,
+        categories
+      }
+
+      return res.status(200).send(response);
+    } else {
+      return res.status(400).send({
+        message: 'You are not authorised to perform this action'
+      });
+    }
+  })
+
 export default userRouter

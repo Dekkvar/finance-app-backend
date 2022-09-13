@@ -1,7 +1,7 @@
 import { LogError, LogSuccess, LogWarning } from '../utils/logger.js';
 
 // ORM - User Collection
-import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData, updateUserMovements, getUserLast12MonthsMovements, getUserDataAccounts } from '../domain/orm/user.orm.js';
+import { getUserInfo, getUserData, updateUser, deleteUser, updateUserData, updateUserMovements, getUserLast12MonthsMovements, getUserDataAccounts, getUserDataCategories } from '../domain/orm/user.orm.js';
 
 export class UserController {
   /**
@@ -55,46 +55,69 @@ export class UserController {
    * @param {*} id of the user.
    * @returns Accounts information for the dashboard.
    */
-     async getUserAccounts(id) {
-      let response;
-  
-      const accounts = await getUserDataAccounts(id);
-  
-      if (!accounts) {
-        LogWarning('[/api/user/me] Need to provide valid user to get any data account')
-        response = {
-          error: 'Invalid User'
-        }
-      } else {
-        LogSuccess('[/api/user/me] Data accounts get successfully')
-        response = accounts;
+  async getUserAccounts(id) {
+    let response;
+
+    const accounts = await getUserDataAccounts(id);
+
+    if (!accounts) {
+      LogWarning('[/api/user/me] Need to provide valid user to get any data account')
+      response = {
+        error: 'Invalid User'
       }
-  
-      return response; 
+    } else {
+      LogSuccess('[/api/user/me] Data accounts get successfully')
+      response = accounts;
     }
+
+    return response; 
+  }
+
+  /**
+   * Controller to Get Dashboard User Data Accounts.
+   * @param {*} id of the user.
+   * @returns Accounts information for the dashboard.
+   */
+  async getUserCategories(id) {
+    let response;
+
+    const categories = await getUserDataCategories(id);
+
+    if (!categories) {
+      LogWarning('[/api/user/me] Need to provide valid user to get any data category')
+      response = {
+        error: 'Invalid User'
+      }
+    } else {
+      LogSuccess('[/api/user/me] Data categories get successfully')
+      response = categories;
+    }
+
+    return response; 
+  }
 
   /**
    * Controller to Get Dashboard User Data from last months movemetns.
    * @param {*} id of the user
    * @returns Last months movements information for the dashboard.
    */
-    async getUserLastMonthsMovements(id) {
-      let response;
-  
-      const data = await getUserLast12MonthsMovements(id);
-  
-      if (!data) {
-        LogWarning('[/api/user/me] Need to provide valid user to get any data')
-        response = {
-          error: 'Invalid User'
-        }
-      } else {
-        LogSuccess('[/api/user/me] Data from last months movements get successfully')
-        response = data;
+  async getUserLastMonthsMovements(id) {
+    let response;
+
+    const data = await getUserLast12MonthsMovements(id);
+
+    if (!data) {
+      LogWarning('[/api/user/me] Need to provide valid user to get any data')
+      response = {
+        error: 'Invalid User'
       }
-  
-      return response; 
+    } else {
+      LogSuccess('[/api/user/me] Data from last months movements get successfully')
+      response = data;
     }
+
+    return response; 
+  }
 
   /**
    * Controller to update personal User data.
