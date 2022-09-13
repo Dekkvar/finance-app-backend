@@ -57,7 +57,9 @@ export const getUserDataAccounts = async (id) => {
  */
  export const getUserDataCategories = async (id) => {
   try {
-    return await userModel.findById(id).select('categories -_id')
+    const categories = await userModel.findById(id).select('categories -_id')
+
+    return categories.categories
   } catch (error) {
     LogError(`[ORM ERROR] Getting User Data: ${error}`);
   }
